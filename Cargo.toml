@@ -1,0 +1,16 @@
+[workspace]
+
+members = [
+    "cmd",
+    "disk",
+    "config",
+]
+
+[profile.dev]
+debug = true
+
+[profile.release]
+debug = false
+
+[profile.bench]
+debug = false

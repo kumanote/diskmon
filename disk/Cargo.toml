@@ -1,0 +1,15 @@
+[package]
+name = "disk"
+version = "0.1.0"
+authors = ["Hiroki Tanaka <hiroki.tanaka@kumano-te.com>"]
+license = "kumanote,LLC. all rights reserved."
+publish = false
+edition = "2021"
+
+[dependencies]
+libc = "0.2"
+anyhow = { version = "1.0", features = ["backtrace"] }
+logger = { version = "0.1.0", git = "https://github.com/kumanote/logger-rs", branch = "main", features = ["airbrake"] }
+
+[dev-dependencies]
+

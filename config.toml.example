@@ -1,0 +1,20 @@
+# check interval
+interval = '15m'
+
+[[targets]]
+mount_point = '/bitcoin/.bitcoin'
+check_method = "capacity_rate"
+threshold = "0.85"
+[[targets]]
+mount_point = '/ethereum/.ethereum'
+check_method = "capacity_rate"
+threshold = "0.85"
+
+[logger]
+chan_size = 1000
+is_async = true
+level = "INFO"
+airbrake_host = 'https://api.airbrake.io'
+airbrake_project_id = '<YOUR-AIRBRAKE-PROJECT-ID>'
+airbrake_project_key = '<YOUR-AIRBRAKE-PROJECT-KEY>'
+airbrake_environment = '<YOUR-AIRBRAKE-ENVIRONMENT>'

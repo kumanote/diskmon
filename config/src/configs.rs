@@ -6,7 +6,7 @@ use std::path::Path;
 use std::str::FromStr;
 use std::time::Duration;
 
-const DEFAULT_INTERVAL: &'static str = "10s";
+const DEFAULT_INTERVAL: &'static str = "10m";
 
 pub trait FromEnv: Sized {
     fn from_env() -> Result<Self>;

@@ -18,6 +18,8 @@ struct Opts {
     check_method: Option<String>,
     #[structopt(short = "t", long, help = "Check threshold")]
     threshold: Option<String>,
+    #[structopt(short = "i", long, help = "Interval")]
+    invterval: Option<String>,
 }
 
 fn main() {
@@ -33,7 +35,8 @@ fn main() {
     let options: Opts = Opts::from_args();
     let mut config =
         config::load_app_config(options.config.as_ref()).expect("Failed to load config file...");
-    let config = if let Some(mount_point) = options.mount_point.as_deref() {
+    let mut config_modified = false;
+    if let Some(mount_point) = options.mount_point.as_deref() {
         let check_method = options.check_method.as_deref().unwrap_or("");
         let threshold = options.threshold.as_deref().unwrap_or("");
         config.add_target(TargetConfig {
@@ -41,6 +44,13 @@ fn main() {
             check_method: check_method.to_owned(),
             threshold: threshold.to_owned(),
         });
+        config_modified = true;
+    }
+    if let Some(invterval) = options.invterval.as_deref() {
+        config.interval = invterval.to_owned();
+        config_modified = true;
+    }
+    let config = if config_modified {
         config::set_app_config(Arc::new(config));
         config::app_config()
     } else {

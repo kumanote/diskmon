@@ -69,6 +69,10 @@ impl ApplicationConfig {
         })
     }
 
+    pub fn add_target(&mut self, target: TargetConfig) {
+        self.targets.push(target)
+    }
+
     pub fn get_interval(&self) -> Duration {
         duration_str::parse(self.interval.as_str()).expect("illegal interval config value...")
     }
@@ -139,10 +143,10 @@ impl FromEnv for LoggerConfig {
             chan_size: None,
             is_async: true,
             level: None,
-            airbrake_host: None,
-            airbrake_project_id: None,
-            airbrake_project_key: None,
-            airbrake_environment: None,
+            airbrake_host: try_get_env_var("AIRBRAKE_HOST")?,
+            airbrake_project_id: try_get_env_var("AIRBRAKE_PROJECT_ID")?,
+            airbrake_project_key: try_get_env_var("AIRBRAKE_PROJECT_KEY")?,
+            airbrake_environment: try_get_env_var("AIRBRAKE_ENVIRONMENT")?,
         })
     }
 }
@@ -196,5 +200,16 @@ fn get_env_var<T: FromStr>(var_name: &str, default_value: T) -> Result<T> {
             .parse::<T>()
             .map_err(|_| anyhow!("illegal env var: {}", var_name)),
         Err(_) => Ok(default_value),
+    }
+}
+
+#[allow(dead_code)]
+fn try_get_env_var<T: FromStr>(var_name: &str) -> Result<Option<T>> {
+    match env::var(var_name) {
+        Ok(val) => val
+            .parse::<T>()
+            .map(|v| Some(v))
+            .map_err(|_| anyhow!("illegal env var: {}", var_name)),
+        Err(_) => Ok(None),
     }
 }

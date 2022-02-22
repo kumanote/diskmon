@@ -1,4 +1,4 @@
-use config::configs::SelfValidation;
+use config::configs::{SelfValidation, TargetConfig};
 use logger::default::DefaultLoggerBuilder;
 use logger::prelude::*;
 use std::panic::{self, PanicInfo};
@@ -12,6 +12,12 @@ use structopt::StructOpt;
 struct Opts {
     #[structopt(short = "c", long, help = "Path to Config")]
     config: Option<PathBuf>,
+    #[structopt(short = "p", long, help = "Mount path to check")]
+    mount_point: Option<String>,
+    #[structopt(short = "m", long, help = "How to check the mount point")]
+    check_method: Option<String>,
+    #[structopt(short = "t", long, help = "Check threshold")]
+    threshold: Option<String>,
 }
 
 fn main() {
@@ -25,16 +31,26 @@ fn main() {
 
     // load configs
     let options: Opts = Opts::from_args();
-    let config =
+    let mut config =
         config::load_app_config(options.config.as_ref()).expect("Failed to load config file...");
+    let config = if let Some(mount_point) = options.mount_point.as_deref() {
+        let check_method = options.check_method.as_deref().unwrap_or("");
+        let threshold = options.threshold.as_deref().unwrap_or("");
+        config.add_target(TargetConfig {
+            mount_point: mount_point.to_owned(),
+            check_method: check_method.to_owned(),
+            threshold: threshold.to_owned(),
+        });
+        config::set_app_config(Arc::new(config));
+        config::app_config()
+    } else {
+        &config
+    };
+
     if let Err(err) = config.validate() {
         eprintln!("{}", err);
         return;
     }
-
-    config::set_app_config(Arc::new(config));
-
-    let config = config::app_config();
 
     // set up logger
     let mut logger_builder = DefaultLoggerBuilder::new();
